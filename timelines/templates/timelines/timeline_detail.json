@@ -1,0 +1,30 @@
+{
+    "timeline":
+    {
+        "headline":"{{ timeline.name|safe|escapejs }}",
+        "type":"default",
+        "startDate":"{{ timeline_start_date_format }}",
+        "dateDisplay":"{{ timeline_start_date_display }}",
+        "text":"{% spaceless %}{{ timeline.description|safe|linebreaks|escapejs }}<p><a href=\"http://www.facebook.com/sharer.php?u=http://{{ current_site.domain }}{{ timeline.get_absolute_url }}\"><img style=\"border:0;margin:0 .33em -2px 0;\" src=\"PATH_TO_FACEBOOK_ICON\">Share on Facebook</a> <a href=\"https://twitter.com/intent/tweet?text=Timeline: {{ timeline.name }}&url=http://{{ current_site.domain }}{{ timeline.get_absolute_url }}\"><img style=\"border:0;margin:0 .33em -2px .67em;\" src=\"PATH_TO_TWITTER_ICON\">Share on Twitter</a></p>{% endspaceless %}",
+        "asset":
+        {
+            "media":"{% if timeline.teaser_photo %}{{ timeline.teaser_photo.url }}{% endif %}",
+            "credit":"{{ timeline.teaser_photo_credit|safe|escapejs }}",
+            "caption":"{% spaceless %}{% if timeline.teaser_caption %}{{ timeline.teaser_caption|safe|escapejs }}{% endif %}{% endspaceless %}"
+        },
+        "date": [{% for item in timeline_items %}
+            {
+                "startDate":"{{ item.verite_date_format }}",
+                "dateDisplay":"{{ item.verite_date_display }}",
+                "headline":"{{ item.title }}",
+                "text":"{% spaceless %}{{ item.description|safe|escapejs }}{% endspaceless %}",
+                "asset":
+                {
+                    "media":"{% if item.embed_link %}{{ item.embed_link }}{% else %}{% if item.photo %}{{ item.photo.url }}{% endif %}{% endif %}",
+                    "credit":"{{ item.media_credit|safe|escapejs }}",
+                    "caption":"{% spaceless %}{% if item.media_caption %}{{ item.media_caption|safe|escapejs }}{% endif %}{% endspaceless %}"
+                }
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}]
+    }
+}
