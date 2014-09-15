@@ -31,7 +31,7 @@ class TimelineAdmin(admin.ModelAdmin):
         TimelineItemInline,
     ]
     fieldsets = (
-        (None, {'fields': (('pubdate', 'is_live', 'is_pick'), ('name', 'slug'), 'description', ('teaser_photo', 'teaser_photo_credit'), 'teaser_photo_caption', 'categories', 'tags', 'custom_template'),}),
+        (None, {'fields': (('pubdate', 'is_live'), ('name', 'slug'), 'description', ('teaser_photo', 'teaser_photo_credit'), 'teaser_photo_caption', 'categories', 'custom_template'),}),
     )
     
 admin.site.register(Timeline, TimelineAdmin)
