@@ -1,13 +1,13 @@
 from django import forms
 from django.contrib import admin
 
-from .models import Timeline, TimelineItem
+from .models import Timeline, TimelineItem, Category
 
 class TimelineItemForm(forms.ModelForm):
     '''
-    For bonus points, you might want to add an AdminImageWidget like the one
-    described here: http://djangosnippets.org/snippets/934/
-    
+    For bonus points, you might want to add an AdminImageWidget
+    like the one described here: http://djangosnippets.org/snippets/934/
+
     And then:
 
     photo = forms.ImageField(required=False, widget=AdminImageWidget())
@@ -20,7 +20,12 @@ class TimelineItemInline(admin.StackedInline):
     extra = 1
     form = TimelineItemForm
     fieldsets = (
-        (None, {'fields': (('date', 'date_display'), ('title', 'description'), 'photo', 'embed_link', ('media_credit', 'media_caption')),}),
+        (None, {'fields': (('date', 'date_display'),
+                           ('title', 'description'),
+                           'photo',
+                           'embed_link',
+                           ('media_credit', 'media_caption')),}
+        ),
     )
 
 class TimelineAdmin(admin.ModelAdmin):
@@ -31,7 +36,15 @@ class TimelineAdmin(admin.ModelAdmin):
         TimelineItemInline,
     ]
     fieldsets = (
-        (None, {'fields': (('pubdate', 'is_live'), ('name', 'slug'), 'description', ('teaser_photo', 'teaser_photo_credit'), 'teaser_photo_caption', 'categories', 'custom_template'),}),
+        (None, {'fields': (('pubdate', 'is_live'),
+                           ('name', 'slug'),
+                           'description',
+                           ('teaser_photo', 'teaser_photo_credit'),
+                           'teaser_photo_caption',
+                           'categories',
+                           'custom_template'),}
+        ),
     )
-    
+
 admin.site.register(Timeline, TimelineAdmin)
+admin.site.register(Category)
