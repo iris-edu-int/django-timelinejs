@@ -8,14 +8,34 @@ from datetime import datetime
 
 current_time = datetime.now
 
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True)
+    description = models.TextField()
+
+    class Meta:
+        ordering = ['name',]
+        verbose_name = 'Timeline Category'
+        verbose_name_plural = 'Timeline Categories'
+
+    def __unicode__(self):
+        return u'%s' % self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify("%s" % (self.name))
+        super(Category, self).save(*args, **kwargs)
+
+
 class LiveTimelineManager(models.Manager):
     def get_query_set(self):
         qs = super(LiveTimelineManager, self).get_query_set()
         return qs.filter(is_live__exact=True, pubdate__lte=current_time)
 
+
 class Timeline(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
+    categories = models.ManyToManyField(Category)
     teaser_photo = models.ImageField(upload_to="timeline_images", blank=True, null=True, help_text="Thumbnail image for lists and teasers.")
     teaser_photo_credit = models.CharField(max_length=255, blank=True)
     teaser_photo_caption = models.TextField(blank=True)
@@ -27,13 +47,17 @@ class Timeline(models.Model):
     custom_template = models.CharField(max_length=255, blank=True, null=True, help_text="Custom template to override default.")
     objects = models.Manager()
     live_objects = LiveTimelineManager()
-    
+
     class Meta:
         ordering = ['-pubdate',]
-    
+
     def __unicode__(self):
         return u'%s' % self.name
-        
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify("%s" % (self.name))
+        super(Timeline, self).save(*args, **kwargs)
+
     @permalink
     def get_absolute_url(self):
         return ('timeline_detail', (), { 'slug' : self.slug })
@@ -64,19 +88,19 @@ class TimelineItem(models.Model):
     media_credit = models.CharField(max_length=255, blank=True)
     media_caption = models.TextField(blank=True)
     significance = models.IntegerField(choices=SIGNIFICANCE_CHOICES, default=2, help_text="Relative importance of this event within the timeline.")
-    
+
     class Meta:
         ordering = ['date',]
-    
+
     def __unicode__(self):
         return u'%s: %s' % (self.date, self.title)
-        
+
     @property
     def verite_date_format(self):
         if self.time:
             return '%s,%s,%s,%s,%s,%s' % (self.date.year, self.date.month, self.date.day, self.time.hour, self.time.minute, self.time.second)
         return '%s,%s,%s' % (self.date.year, self.date.month, self.date.day)
-    
+
     @property
     def verite_date_display(self):
         if self.date_display == 1:
